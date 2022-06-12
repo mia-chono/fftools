@@ -47,7 +47,7 @@ class Process(object):
     def _monitor(self) -> None:
         logging.info("[PROCESS][MONITOR] start monitor")
         duration = 1
-        remaining_time = 0
+        total_downloaded_time = 0
         log = []
         start_time = time.time()
 
@@ -60,9 +60,9 @@ class Process(object):
             log += [line]
 
             if callable(self.monitor):
-                duration = get_str_time_from_text('Duration: ', line, duration)
-                remaining_time = get_str_time_from_text('time=', line, remaining_time)
-                self.monitor(line, duration, remaining_time, seconds_elapsed(start_time, remaining_time, duration), self.process)
+                duration = float(get_str_time_from_text('Duration: ', line, duration))
+                total_downloaded_time = float(get_str_time_from_text('time=', line, total_downloaded_time))
+                self.monitor(line, duration, total_downloaded_time, seconds_elapsed(start_time, total_downloaded_time, duration), self.process)
 
         Process.out = log
 

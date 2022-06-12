@@ -1,4 +1,6 @@
+import datetime
 import re
+import sys
 import time
 
 
@@ -27,3 +29,26 @@ def seconds_elapsed(start_time: float, current_time: float, total: float) -> flo
         time_elapsed = time.time() - start_time
         return total * time_elapsed / current_time - time_elapsed
     return 0
+
+
+def basic_monitor(ffmpeg, duration, remaining_time, time_spent, process):
+    """
+       example of the visual: `[0:23:03](5%) 0:01:24 left [#####-----------------------------------------------------------------------------------------------]`
+       :param ffmpeg: ffmpeg command line
+       :param duration: duration of the video
+       :param time_: current time of transcoded video
+       :param time_left: seconds left to finish the video process
+       :param process: subprocess object
+       :return: None
+       """
+    percent = round(remaining_time / duration * 100)
+    sys.stdout.write(
+        "\r[{}]({}%) {} left [{}{}]".format(
+            datetime.timedelta(seconds=int(duration)),
+            percent,
+            datetime.timedelta(seconds=int(time_spent)),
+            '#' * percent,
+            '-' * (100 - percent)
+        )
+    )
+    sys.stdout.flush()
