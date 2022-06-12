@@ -1,17 +1,7 @@
 """
-ffmpeg_streaming.process
-~~~~~~~~~~~~
-
-Run FFmpeg commands and monitor FFmpeg
-
-
-:copyright: (c) 2020 by Amin Yazdanpanah.
-:website: https://www.aminyazdanpanah.com
-:email: contact@aminyazdanpanah.com
-:license: MIT, see LICENSE for more details.
+based on ffmpeg_streaming.process
 """
 
-import shlex
 import subprocess
 import threading
 import logging
@@ -27,7 +17,6 @@ class Process(object):
 
     def __init__(self, bin_path, commands: str, monitor: callable = None, **options) -> None:
         self.is_monitor = False
-        self.input = commands
         self.timeout = options.pop('timeout', None)
         default_proc_opts = {
             'stdin': None,
@@ -58,7 +47,7 @@ class Process(object):
     def _monitor(self) -> None:
         logging.info("[PROCESS][MONITOR] start monitor")
         duration = 1
-        current_time = 0
+        remaining_time = 0
         log = []
         start_time = time.time()
 
@@ -72,8 +61,8 @@ class Process(object):
 
             if callable(self.monitor):
                 duration = get_str_time_from_text('Duration: ', line, duration)
-                current_time = get_str_time_from_text('time=', line, current_time)
-                self.monitor(line, duration, current_time, seconds_elapsed(start_time, current_time, duration), self.process)
+                remaining_time = get_str_time_from_text('time=', line, remaining_time)
+                self.monitor(line, duration, remaining_time, seconds_elapsed(start_time, remaining_time, duration), self.process)
 
         Process.out = log
 
@@ -91,10 +80,10 @@ class Process(object):
             raise RuntimeError(error)
 
     def run(self) -> Tuple[str, str]:
-        # if self.is_monitor:
-        #     self._thread_monitor()
-        # else:
-        Process.out, Process.err = self.process.communicate(self.input, self.timeout)
+        if self.is_monitor:
+            self._thread_monitor()
+        else:
+            Process.out, Process.err = self.process.communicate(None, self.timeout)
 
         if self.process.poll():
             error = str(Process.err) if Process.err else str(Process.out)
