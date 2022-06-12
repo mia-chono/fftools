@@ -19,7 +19,7 @@ def convert_str_time_to_sec(str_time: str) -> int:
 
 def get_str_time_from_text(key: str, string: str, default: str) -> str:
     str_time = re.search(r'(?<={})\w+:\w+:\w+'.format(key), string)
-    return convert_str_time_to_sec(str_time.group(0)) if time else default
+    return convert_str_time_to_sec(str_time.group(0)) if str_time else default
 
 
 def seconds_elapsed(start_time: float, current_time: float, total: float) -> float:
