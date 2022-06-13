@@ -12,10 +12,19 @@ from utils import get_str_time_from_text, seconds_elapsed
 
 
 class Process(object):
+    """
+    Process wrapper
+    """
     out = None
     err = None
 
     def __init__(self, bin_path, commands: str, monitor: callable = None, **options) -> None:
+        """
+        :param bin_path: binary path
+        :param commands: commands to execute with the binary
+        :param monitor: callback function to monitor the process
+        :param options: options to pass to the subprocess
+        """
         self.is_monitor = False
         self.timeout = options.pop('timeout', None)
         default_proc_opts = {
@@ -45,6 +54,9 @@ class Process(object):
         self.process.kill()
 
     def _monitor(self) -> None:
+        """
+        Monitor the process with the monitor callback function or/and logging object
+        """
         logging.info("[PROCESS][MONITOR] start monitor")
         duration = 1
         total_downloaded_time = 0
@@ -60,13 +72,16 @@ class Process(object):
             log += [line]
 
             if callable(self.monitor):
-                duration = float(get_str_time_from_text('Duration: ', line, duration))
-                total_downloaded_time = float(get_str_time_from_text('time=', line, total_downloaded_time))
+                duration = get_str_time_from_text('Duration: ', line, duration)
+                total_downloaded_time = get_str_time_from_text('time=', line, total_downloaded_time)
                 self.monitor(line, duration, total_downloaded_time, seconds_elapsed(start_time, total_downloaded_time, duration), self.process)
 
         Process.out = log
 
     def _thread_monitor(self) -> None:
+        """
+        Run the monitor callback function in a thread during the process execution
+        """
         thread = threading.Thread(target=self._monitor)
         logging.info("[PROCESS][THREAD] start thread")
         thread.start()
@@ -80,6 +95,10 @@ class Process(object):
             raise RuntimeError(error)
 
     def run(self) -> Tuple[str, str]:
+        """
+        Run the process and return the output and error
+        :returns: output and error
+        """
         if self.is_monitor:
             self._thread_monitor()
         else:
