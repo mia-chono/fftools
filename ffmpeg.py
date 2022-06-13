@@ -1,10 +1,11 @@
-from process import Process
+from .process import Process
 
 
 class FFmpeg:
     """
     FFmpeg wrapper, used to simplify the using of ffmpeg.
     """
+
     def __init__(self, bin_path: str = 'ffmpeg', **options):
         self.err = None
         self.pipe = None

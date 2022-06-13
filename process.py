@@ -8,7 +8,7 @@ import logging
 import time
 from typing import Tuple
 
-from utils import get_str_time_from_text, seconds_elapsed
+from .utils import get_str_time_from_text, seconds_elapsed
 
 
 class Process(object):
