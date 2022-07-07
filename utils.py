@@ -69,7 +69,7 @@ def basic_monitor(process_cmd_line, duration, downloaded_time, remaining_time, p
     sys.stdout.write(
         "\r[{}]({}%) {} left [{}{}]".format(
             datetime.timedelta(seconds=int(duration)),
-            percent,
+            str(percent).rjust(3, " "),
             datetime.timedelta(seconds=int(remaining_time)),
             '#' * percent,
             '-' * (100 - percent)
